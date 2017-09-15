@@ -100,3 +100,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# django setting
+lightil/settings.py
