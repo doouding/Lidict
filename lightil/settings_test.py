@@ -79,7 +79,7 @@ DATABASES = {
         'HOST': '',
         'NAME': 'lightil',
         'USER': 'root',
-        'PASSWORD': 'root'
+        'PASSWORD': ''
     }
 }
 
