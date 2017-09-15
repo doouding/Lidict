@@ -26,7 +26,7 @@ class AuthViews(APIView):
             username = request.data['username']
             pwd = request.data['pwd']
         except KeyError:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({ 'detail': '不完整的验证信息' }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             u = User.objects.get(username=username)
@@ -39,9 +39,9 @@ class AuthViews(APIView):
                 data = { 'token': token }
                 return Response(data, status=status.HTTP_201_CREATED)
             else:
-                return Response({ 'detail': '密码错误' }, status=status.HTTP_400_BAD_REQUEST)
+                return Response({ 'detail': '验证信息错误' }, status=status.HTTP_400_BAD_REQUEST)
         except ObjectDoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({ 'detail': '验证信息错误' }, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, token, format=None):
         """
