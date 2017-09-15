@@ -1,13 +1,22 @@
 language: python
+
 python:
  - "3.6"
  - "3.5"
 
+env:
+ - DJANGO_SETTINGS_MODULE: lightil.settings_sample
+
 sudo: false
+
+services: mysql
 
 branches:
   only:
   - master
+
+before_script:
+ - mysql -e 'create database IF NOT EXSITS lightil CHARACTER SET utf8;'
 
 install: pip install -r requirements.txt
 
