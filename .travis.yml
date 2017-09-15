@@ -22,7 +22,7 @@ install:
  - pip install -r requirements.txt
  - pip install codecov
 
-script: coverage ./manage.py test test
+script: coverage run manage.py test test
 
 after_success:
  - codecov
