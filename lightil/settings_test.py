@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'jwt_auth.apps.JwtAuthConfig',
-    'wallet.apps.WalletConfig',
     'rest_framework'
 ]
 
