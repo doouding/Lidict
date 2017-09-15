@@ -18,7 +18,11 @@ branches:
 before_script:
  - mysql -e 'CREATE DATABASE IF NOT EXISTS lightil CHARACTER SET utf8 COLLATE utf8_general_ci;'
 
-install: pip install -r requirements.txt
+install:
+ - pip install -r requirements.txt
+ - pip install codecov
 
-script: ./manage.py test test
+script: coverage ./manage.py test test
 
+after_success:
+ - codecov
