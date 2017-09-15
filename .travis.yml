@@ -1,0 +1,15 @@
+language: python
+python:
+ - "3.6"
+ - "3.5"
+
+sudo: false
+
+branches:
+  only:
+  - master
+
+install: pip install -r requirements.txt
+
+script: ./manage.py test test
+
