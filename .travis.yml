@@ -16,7 +16,7 @@ branches:
   - master
 
 before_script:
- - mysql -e 'create database IF NOT EXSITS lightil CHARACTER SET utf8;'
+ - mysql -e 'CREATE DATABASE IF NOT EXISTS lightil CHARACTER SET utf8 COLLATE utf8_general_ci;'
 
 install: pip install -r requirements.txt
 
