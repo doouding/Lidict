@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.contenttypes',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
     'jwt_auth.apps.JwtAuthConfig',
     'rest_framework'
@@ -44,8 +43,6 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -122,8 +119,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
@@ -131,11 +126,20 @@ CACHES = {
 }
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'jwt_auth.authentication.JwtAuthentication',
+    ),
+
     'DEFAULT_PARSER_CLASSES':(
         'rest_framework.parsers.JSONParser'
     ),
+
     'PAGE_SIZE': 10
 }
 
-# authencation expire time in seconds, default is 7 days
+SKIP_AUTHENTICATION_PATH = (
+    r'^/api/auth/',
+)
+
+# token expire time in seconds, default is 7 days
 AUTH_EXPIRE_TIME = 604800
