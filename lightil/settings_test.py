@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'jwt_auth.apps.JwtAuthConfig',
-    'wallet.apps.WalletConfig',
     'rest_framework'
 ]
 
@@ -80,7 +79,7 @@ DATABASES = {
         'HOST': '',
         'NAME': 'lightil',
         'USER': 'root',
-        'PASSWORD': 'root'
+        'PASSWORD': ''
     }
 }
 
