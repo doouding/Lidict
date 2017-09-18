@@ -22,9 +22,9 @@ class JwtAuthTestCase(TestCase):
         r4 = c4.post('/api/auth/', encoder.encode({ "username": "donotexist", "pwd": "12345678" }), content_type="application/json")
 
         self.assertEqual(201, r1.status_code)
-        self.assertEqual(r2.json()['detail'], '不完整的验证信息')
-        self.assertEqual(r3.json()['detail'], '验证信息错误')
-        self.assertEqual(r3.json()['detail'], '验证信息错误')
+        self.assertEqual(r2.json()['detail'], 'Incomplete authentication information')
+        self.assertEqual(r3.json()['detail'], 'Incorrect authentication information')
+        self.assertEqual(r3.json()['detail'], 'Incorrect authentication information')
     
     def test_token_validation(self):
         c1 = Client()
