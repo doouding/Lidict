@@ -21,6 +21,7 @@ Type suggest which type of change you have made. The following type are suggeste
 - `test` : Adding or refactoring tests.
 - `chore` : Such as update config file etc, no production code change.
 - `revert`: When you revert something
+- `contrib`: Normal code work other than fix, feat, style, refactor
 
 ### Scope
 
