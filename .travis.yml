@@ -2,7 +2,6 @@ language: python
 
 python:
  - "3.6"
- - "3.5"
 
 env:
  - DJANGO_SETTINGS_MODULE: lightil.settings_test
