@@ -24,9 +24,9 @@ def validate_token(token):
         user = User.objects.get(id=user_info['uid'])
     except jwt.InvalidTokenError as e:
         if isinstance(e, jwt.ExpiredSignatureError):
-            raise exceptions.AuthenticationFailed('expired token')
+            raise exceptions.AuthenticationFailed('Expired token')
         else:
-            raise exceptions.AuthenticationFailed('invalid token')
+            raise exceptions.AuthenticationFailed('Invalid token')
 
     return (user, token)
 
@@ -41,5 +41,9 @@ class JwtAuthentication(authentication.BaseAuthentication):
             if match:
                 return (None, None)
 
-        token = request.META.get('Authorization')
-        return authenticate(token)
+        auth = request.META.get('Authorization')
+
+        return validate_token(auth.split(' ').pop())
+    
+    def authenticate_header(self, request):
+        return 'Token'

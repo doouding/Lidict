@@ -5,11 +5,12 @@ import jwt
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
-from rest_framework import status, exceptions
+from rest_framework.exceptions import AuthenticationFailed
+from lightil.util.exception import ClientException
 from .model import TokenBlackList
 from .authentication import validate_token
 
@@ -27,7 +28,7 @@ class TokenCreateViews(APIView):
             username = request.data['username']
             pwd = request.data['pwd']
         except KeyError:
-            return Response({ 'detail': '不完整的验证信息' }, status=status.HTTP_400_BAD_REQUEST)
+            raise ClientException('Incomplete authentication information')
 
         try:
             u = User.objects.get(username=username)
@@ -40,9 +41,9 @@ class TokenCreateViews(APIView):
                 data = { 'token': token }
                 return Response(data, status=status.HTTP_201_CREATED)
             else:
-                return Response({ 'detail': '验证信息错误' }, status=status.HTTP_400_BAD_REQUEST)
+                raise ClientException('Incorrect authentication information')
         except ObjectDoesNotExist:
-            return Response({ 'detail': '验证信息错误' }, status=status.HTTP_400_BAD_REQUEST)
+            raise ClientException('Incorrect authentication information')
 
 class TokenVerifyDeleteViews(APIView):
     """
@@ -56,10 +57,11 @@ class TokenVerifyDeleteViews(APIView):
         """
         try:
             validate_token(token)
-        except exceptions.AuthenticationFailed as e:
-            return Response({ 'detail': e.detail }, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(status=status.HTTP_200_OK)
+        except AuthenticationFailed as exc:
+            raise ClientException('Invalid token')
+        
+        data = {'token': token}
+        return Response(data, status=status.HTTP_200_OK)
 
     def delete(self, request, token, format=None):
         """
@@ -70,6 +72,6 @@ class TokenVerifyDeleteViews(APIView):
             invalid_token = TokenBlackList(token=token, expire=(datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'))
             invalid_token.save()
         except jwt.exceptions.DecodeError:
-            return Response({ 'detail': '无效的Token' }, status=status.HTTP_404_NOT_FOUND)
+            return ClientException('Invalid token')
 
         return Response(status=status.HTTP_204_NO_CONTENT)
