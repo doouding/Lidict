@@ -14,7 +14,7 @@ def validate_token(token):
     # check whether the token has been blacklisted
     try:
         TokenBlackList.objects.get(token=token)
-        raise exceptions.AuthenticationFailed('invalid token')
+        raise exceptions.AuthenticationFailed('Invalid token')
     except ObjectDoesNotExist:
         pass
 
@@ -39,10 +39,14 @@ class JwtAuthentication(authentication.BaseAuthentication):
             match = re.search(path, request.path)
             if match:
                 return (None, None)
+        
+        try:
+            auth = request.META.get('Authorization')
+            token = auth.split(' ').pop()
+        except:
+            raise exceptions.AuthenticationFailed('The resource reqire token to authenticate')
 
-        auth = request.META.get('Authorization')
-
-        return validate_token(auth.split(' ').pop())
+        return validate_token(token)
     
     def authenticate_header(self, request):
         return 'Token'
