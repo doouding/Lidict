@@ -1,9 +1,8 @@
 from rest_framework import authentication
 from rest_framework import exceptions
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from jwt_auth.model import TokenBlackList
+from jwt_auth.models import TokenBlackList, User
 import re
 import jwt
 

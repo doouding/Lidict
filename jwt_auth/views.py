@@ -1,24 +1,24 @@
+"""
+Jwt-auth app provide user and token related functionality
+"""
 import time
 import math
 from datetime import datetime
 import jwt
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from rest_framework import status
-from rest_framework.views import APIView
+from rest_framework import status, mixins, viewsets
 from rest_framework.response import Response
-from rest_framework.parsers import JSONParser
 from rest_framework.exceptions import AuthenticationFailed
 from lightil.util.exception import ClientException
-from .model import TokenBlackList
+from .models import TokenBlackList, User
+from .serializers import UserSerializer
 from .authentication import validate_token
 
-class TokenCreateViews(APIView):
+class TokenViews(viewsets.ViewSet):
     """
-    Create Token
+    Provide `create` actions for token
     """
-    parser_classes = (JSONParser,)
 
     def post(self, request, format=None):
         """
@@ -31,25 +31,19 @@ class TokenCreateViews(APIView):
             raise ClientException('Incomplete authentication information')
 
         try:
-            u = User.objects.get(username=username)
+            user = User.objects.get(username=username)
 
-            if u.check_password(pwd):
+            if user.check_password(pwd):
                 token = jwt.encode({
-                    "uid": u.id,
+                    "uid": user.id,
                     "exp": math.floor(time.time()) + settings.AUTH_EXPIRE_TIME
                 }, settings.SECRET_KEY)
-                data = { 'token': token }
+                data = {'token': token}
                 return Response(data, status=status.HTTP_201_CREATED)
             else:
                 raise ClientException('Incorrect authentication information')
         except ObjectDoesNotExist:
             raise ClientException('Incorrect authentication information')
-
-class TokenVerifyDeleteViews(APIView):
-    """
-    Delete token or verify a token through GET method
-    """
-    parser_classes = (JSONParser,)
 
     def get(self, request, token, format=None):
         """
@@ -59,7 +53,7 @@ class TokenVerifyDeleteViews(APIView):
             validate_token(token)
         except AuthenticationFailed as exc:
             raise ClientException('Invalid token')
-        
+
         data = {'token': token}
         return Response(data, status=status.HTTP_200_OK)
 
@@ -69,9 +63,41 @@ class TokenVerifyDeleteViews(APIView):
         """
         try:
             expire_timestamp = jwt.decode(token, key=settings.SECRET_KEY)['exp']
-            invalid_token = TokenBlackList(token=token, expire=(datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'))
+            invalid_token = TokenBlackList(
+                token=token,
+                expire=(datetime.fromtimestamp(expire_timestamp).isoformat() + 'Z'),
+            )
             invalid_token.save()
         except jwt.exceptions.DecodeError:
             return ClientException('Invalid token')
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class UserViews(viewsets.GenericViewSet,
+                mixins.CreateModelMixin,
+                mixins.RetrieveModelMixin,
+                mixins.UpdateModelMixin):
+    """
+    Provide `create`, `retrieve`, `update` for user
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    # identify an user by `username` field not primary key
+    lookup_field = 'username'
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        # username cannot be changed once user is created
+        # email cannot be changed directly PUT /user/{username}/email to update email
+        try:
+            del kwargs['username']
+            del kwargs['email']
+        except KeyError:
+            pass
+        return self.update(request, *args, **kwargs)
