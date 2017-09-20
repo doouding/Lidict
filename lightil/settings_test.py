@@ -27,9 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.admin',
@@ -38,6 +36,8 @@ INSTALLED_APPS = [
     'jwt_auth.apps.JwtAuthConfig',
     'rest_framework'
 ]
+
+AUTH_USER_MODEL = 'jwt_auth.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -131,7 +131,7 @@ REST_FRAMEWORK = {
     ),
 
     'DEFAULT_PARSER_CLASSES':(
-        'rest_framework.parsers.JSONParser'
+        'rest_framework.parsers.JSONParser',
     ),
 
     'PAGE_SIZE': 10
@@ -139,6 +139,7 @@ REST_FRAMEWORK = {
 
 SKIP_AUTHENTICATION_PATH = (
     r'^/api/auth/',
+    r'^/api/user/?$',
 )
 
 # token expire time in seconds, default is 7 days
