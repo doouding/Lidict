@@ -44,7 +44,7 @@ class JwtAuthentication(authentication.BaseAuthentication):
             auth = request.META.get('Authorization')
             token = auth.split(' ').pop()
         except:
-            raise exceptions.AuthenticationFailed('The resource reqire token to authenticate')
+            raise exceptions.AuthenticationFailed('The resource require token to authenticate')
 
         return validate_token(token)
     
