@@ -8,8 +8,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'nickname', 'username', 'email', 'password')
 
-    # default `create` method call `model.objects.create` method to create new instance
-    # override to create user correctly
+    # serializer's default `create` method will call `model.objects.create`
+    # method to create new instance, override to create user correctly.
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
