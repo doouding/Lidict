@@ -9,13 +9,8 @@ class TokenBlackList(models.Model):
     token = models.CharField(max_length=200)
     expire = models.DateTimeField()
 
-class CustomUserManager(UserManager):
-    # serializer use `create` method to create new instance
-    # override it to use `create_user` to create new user correctly  
-    def create(self, **extra_fields):
-        return self.create_user(**extra_fields)
-    
-    # the default `create_user` allow the password field empty
+class CustomUserManager(UserManager):    
+    # the default `create_user` allow password field left empty
     # override to make password required
     def create_user(self, username, email, password, **extra_fields):
         if password is None:

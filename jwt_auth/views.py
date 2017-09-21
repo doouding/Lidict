@@ -100,4 +100,7 @@ class UserViews(viewsets.GenericViewSet,
             del kwargs['email']
         except KeyError:
             pass
+        
+        kwargs['partial'] = True
+
         return self.update(request, *args, **kwargs)
