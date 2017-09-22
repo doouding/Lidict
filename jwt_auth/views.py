@@ -9,15 +9,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from rest_framework import status, mixins, viewsets
 from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import PermissionDenied
 from lightil.util.exception import ClientException
 from .models import TokenBlackList, User
 from .serializers import UserSerializer
-from .authentication import validate_token
 
 class TokenViews(viewsets.ViewSet):
     """
-    Provide `create` actions for token
+    Provide `create`, `delete` actions for token
     """
 
     def post(self, request, format=None):
@@ -45,22 +44,13 @@ class TokenViews(viewsets.ViewSet):
         except ObjectDoesNotExist:
             raise ClientException('Incorrect authentication information')
 
-    def get(self, request, token, format=None):
-        """
-        Validating a token
-        """
-        try:
-            validate_token(token)
-        except AuthenticationFailed as exc:
-            raise ClientException('Invalid token')
-
-        data = {'token': token}
-        return Response(data, status=status.HTTP_200_OK)
-
     def delete(self, request, token, format=None):
         """
         Delete a token by blacklist it, token in the black list is considered invalid.
         """
+        if request.auth is token:
+            raise PermissionDenied('You can only delete the token you currently use')
+
         try:
             expire_timestamp = jwt.decode(token, key=settings.SECRET_KEY)['exp']
             invalid_token = TokenBlackList(
@@ -100,7 +90,7 @@ class UserViews(viewsets.GenericViewSet,
             del kwargs['email']
         except KeyError:
             pass
-        
+
         kwargs['partial'] = True
 
         return self.update(request, *args, **kwargs)

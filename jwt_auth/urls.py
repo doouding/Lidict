@@ -6,7 +6,7 @@ token_create = TokenViews.as_view({
 })
 
 token_detail = TokenViews.as_view({
-    'get':  'get',
+    'delete':  'delete',
 })
 
 user_create = UserViews.as_view({
