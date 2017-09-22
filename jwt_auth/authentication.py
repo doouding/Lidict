@@ -46,8 +46,8 @@ class JwtAuthentication(authentication.BaseAuthentication):
         for path in paths:
             match = re.search(path, request.path)
             if match:
-                return (None, None)
-        
+                return None
+
         # do authentication
         try:
             auth = request.META.get('Authorization').split(' ')
