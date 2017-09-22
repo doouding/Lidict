@@ -4,7 +4,7 @@ python:
  - "3.6"
 
 env:
- - DJANGO_SETTINGS_MODULE: lightil.settings_test
+ - DJANGO_SETTINGS_MODULE: lightil.settings.test
 
 sudo: false
 
