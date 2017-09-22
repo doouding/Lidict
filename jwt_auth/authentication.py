@@ -35,18 +35,32 @@ class JwtAuthentication(authentication.BaseAuthentication):
     """
 
     def authenticate(self, request):
-        for path in settings.SKIP_AUTHENTICATION_PATH:
+        # check the request path is excluded or not
+        paths = list(settings.AUTHENTICATION_EXCLUDE['ALL']) if 'ALL' in settings.AUTHENTICATION_EXCLUDE else []
+
+        try:
+            paths.extend(list(settings.AUTHENTICATION_EXCLUDE[request.method]))
+        except KeyError:
+            pass
+
+        for path in paths:
             match = re.search(path, request.path)
             if match:
                 return (None, None)
         
+        # do authentication
         try:
-            auth = request.META.get('Authorization')
-            token = auth.split(' ').pop()
+            auth = request.META.get('Authorization').split(' ')
         except:
             raise exceptions.AuthenticationFailed('The resource require token to authenticate')
 
-        return validate_token(token)
-    
+        auth_type = auth[0]
+        token = auth[1]
+
+        if auth_type.lower() == 'token':
+            return validate_token(token)
+        else:
+            raise exceptions.AuthenticationFailed('Invalid authentication header')
+
     def authenticate_header(self, request):
         return 'Token'
