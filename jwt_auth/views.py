@@ -13,6 +13,7 @@ from rest_framework.exceptions import PermissionDenied
 from lightil.util.exception import ClientException
 from .models import TokenBlackList, User
 from .serializers import UserSerializer
+from .permissions import IsUser
 
 class TokenViews(viewsets.ViewSet):
     """
@@ -73,12 +74,16 @@ class UserViews(viewsets.GenericViewSet,
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    permission_classes=(IsUser,)
+
     # identify an user by `username` field not primary key
     lookup_field = 'username'
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
+    # create new user require no authentication
+    # thus add POST /api/user/ to AUTHENTICATION_EXCLUDE 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
