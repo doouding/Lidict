@@ -69,16 +69,8 @@ class JwtAuthTestCase(TestCase):
         self.assertEqual(res3.json()['detail'], 'Incorrect authentication information')
         self.assertEqual(res4.json()['detail'], 'Incorrect authentication information')
 
-    def test_token_validation(self):
-        res1 = test_request('/api/auth/', data={"username": "codert", "pwd": "87654321"})
-        res2 = test_request(f'/api/auth/{res1.json()["token"]}/', method='GET')
-
-        self.assertEqual(200, res2.status_code)
-
     def test_token_delete(self):
         res1 = test_request('/api/auth/', data={"username": "codert", "pwd": "87654321"})
-        res2 = test_request(f'/api/auth/{res1.json()["token"]}/', method='DELETE')
-        res3 = test_request(f'/api/auth/{res1.json()["token"]}/', method='GET')
+        res2 = test_request(f'/api/auth/{res1.json()["token"]}/', method='DELETE', Authorization=f'Token {res1.json()["token"]}')
 
         self.assertEqual(204, res2.status_code)
-        self.assertEqual(400, res3.status_code)
