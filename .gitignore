@@ -102,4 +102,4 @@ venv.bak/
 .mypy_cache/
 
 # django setting
-lightil/settings.py
+lightil/settings/local.py
