@@ -120,7 +120,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
-AUTHENTICATION_EXCLUDE_PATH = {
+AUTHENTICATION_EXCLUDE = {
     'POST': (
         r'^/api/auth/?$',
         r'^/api/user/?$'
