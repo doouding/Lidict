@@ -103,3 +103,4 @@ venv.bak/
 
 # django setting
 lightil/settings/local.py
+lightil/settings/test.py
